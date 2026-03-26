@@ -13,5 +13,17 @@
       "home",
       "work"
     ]
+  },
+  {
+    "id": "569ab833-1ecc-4f8e-914e-cbadd25cea9c",
+    "title": "High Priority Task",
+    "description": "urgent work",
+    "priority": 4,
+    "status": "todo",
+    "created_at": "2026-03-26T18:12:36.537609",
+    "updated_at": "2026-03-26T18:12:36.537609",
+    "due_date": "2026-03-27T00:00:00",
+    "completed_at": null,
+    "tags": []
   }
 ]

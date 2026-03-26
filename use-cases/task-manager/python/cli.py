@@ -78,6 +78,15 @@ def main():
 
     stats_parser = subparsers.add_parser("stats", help="Show task statistics")
 
+    export_parser = subparsers.add_parser("export", help="Export tasks to CSV file")
+    export_parser.add_argument("output", help="Output CSV file path")
+    export_parser.add_argument("-s", "--status", help="Filter by status",
+                              choices=["todo", "in_progress", "review", "done"])
+    export_parser.add_argument("-p", "--priority", help="Filter by priority",
+                              type=int, choices=[1, 2, 3, 4])
+    export_parser.add_argument("-o", "--overdue", help="Export only overdue tasks",
+                              action="store_true")
+
     args = parser.parse_args()
     task_manager = TaskManager()
 
@@ -156,6 +165,11 @@ def main():
             print(f"  {priority}: {count}")
         print(f"Overdue tasks: {stats['overdue']}")
         print(f"Completed in last 7 days: {stats['completed_last_week']}")
+
+    elif args.command == "export":
+        success, message = task_manager.export_tasks_to_csv(
+            args.output, args.status, args.priority, args.overdue)
+        print(message if success else f"Error: {message}")
 
     else:
         parser.print_help()

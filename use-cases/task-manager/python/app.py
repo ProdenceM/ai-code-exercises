@@ -106,3 +106,18 @@ class TaskManager:
             "completed_last_week": completed_recently
         }
 
+    def export_tasks_to_csv(self, output_path, status_filter=None,
+                           priority_filter=None, show_overdue=False):
+        """Export filtered tasks to CSV file."""
+        from .export import TaskCSVExporter
+
+        status = TaskStatus(status_filter) if status_filter else None
+        priority = TaskPriority(priority_filter) if priority_filter else None
+        tasks = self.storage.get_tasks(status=status, priority=priority,
+                                       overdue=show_overdue)
+
+        if not tasks:
+            return False, "No tasks to export"
+
+        return TaskCSVExporter.export_to_file(tasks, output_path)
+
