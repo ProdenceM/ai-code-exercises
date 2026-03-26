@@ -9,7 +9,8 @@ def format_task(task):
         TaskStatus.TODO: "[ ]",
         TaskStatus.IN_PROGRESS: "[>]",
         TaskStatus.REVIEW: "[?]",
-        TaskStatus.DONE: "[✓]"
+        TaskStatus.DONE: "[✓]",
+        TaskStatus.ABANDONED: "[✗]"
     }
 
     priority_symbol = {
@@ -77,6 +78,13 @@ def main():
     delete_parser.add_argument("task_id", help="Task ID")
 
     stats_parser = subparsers.add_parser("stats", help="Show task statistics")
+
+    abandon_parser = subparsers.add_parser("abandon", 
+        help="Mark old overdue tasks as abandoned")
+    abandon_parser.add_argument("--days", type=int, default=7,
+        help="Threshold days overdue (default: 7)")
+    abandon_parser.add_argument("--dry-run", action="store_true",
+        help="Preview what would be abandoned without making changes")
 
     export_parser = subparsers.add_parser("export", help="Export tasks to CSV file")
     export_parser.add_argument("output", help="Output CSV file path")
@@ -164,7 +172,30 @@ def main():
         for priority, count in stats['by_priority'].items():
             print(f"  {priority}: {count}")
         print(f"Overdue tasks: {stats['overdue']}")
+        print(f"Abandoned tasks: {stats['abandoned']}")
         print(f"Completed in last 7 days: {stats['completed_last_week']}")
+
+    elif args.command == "abandon":
+        count, task_ids = task_manager.mark_overdue_tasks_as_abandoned(
+            threshold_days=args.days,
+            dry_run=args.dry_run
+        )
+        
+        if count == 0:
+            print(f"No tasks to abandon (threshold: {args.days}+ days overdue)")
+        elif args.dry_run:
+            print(f"[DRY RUN] Would abandon {count} task(s):")
+            for task_id in task_ids:
+                task = task_manager.get_task_details(task_id)
+                if task:
+                    print(f"  ✗ {task_id[:8]}: {task.title} (priority: {task.priority.value}, overdue: {task.days_overdue()} days)")
+            print("\nRun without --dry-run to actually mark as abandoned")
+        else:
+            print(f"Marked {count} task(s) as abandoned:")
+            for task_id in task_ids:
+                task = task_manager.get_task_details(task_id)
+                if task:
+                    print(f"  ✗ {task_id[:8]}: {task.title}")
 
     elif args.command == "export":
         success, message = task_manager.export_tasks_to_csv(

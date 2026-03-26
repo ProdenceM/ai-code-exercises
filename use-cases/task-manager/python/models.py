@@ -14,6 +14,7 @@ class TaskStatus(Enum):
     IN_PROGRESS = "in_progress"
     REVIEW = "review"
     DONE = "done"
+    ABANDONED = "abandoned"
 
 class Task:
     def __init__(self, title, description="", priority=TaskPriority.MEDIUM,
@@ -44,4 +45,18 @@ class Task:
         if not self.due_date:
             return False
         return self.due_date < datetime.now() and self.status != TaskStatus.DONE
+
+    def days_overdue(self):
+        """Calculate how many days past due date. Returns 0 if not overdue."""
+        if not self.is_overdue():
+            return 0
+        return (datetime.now() - self.due_date).days
+
+    def can_be_abandoned(self, threshold_days=7):
+        """Check if task meets abandonment criteria.
+        Returns True if: overdue > threshold_days AND priority is LOW or MEDIUM."""
+        return (self.is_overdue() and
+                self.days_overdue() >= threshold_days and
+                self.priority in [TaskPriority.LOW, TaskPriority.MEDIUM] and
+                self.status != TaskStatus.ABANDONED)
 

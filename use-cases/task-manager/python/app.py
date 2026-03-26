@@ -91,6 +91,10 @@ class TaskManager:
         # Count overdue
         overdue_count = len([task for task in tasks if task.is_overdue()])
 
+        # Count abandoned
+        abandoned_count = len([task for task in tasks 
+                              if task.status == TaskStatus.ABANDONED])
+
         # Count completed in last 7 days
         seven_days_ago = datetime.now() - timedelta(days=7)
         completed_recently = len([
@@ -103,8 +107,40 @@ class TaskManager:
             "by_status": status_counts,
             "by_priority": priority_counts,
             "overdue": overdue_count,
+            "abandoned": abandoned_count,
             "completed_last_week": completed_recently
         }
+
+    def mark_overdue_tasks_as_abandoned(self, threshold_days=7, dry_run=False):
+        """
+        Find and mark tasks as abandoned if:
+        - Overdue for more than threshold_days
+        - Priority is LOW or MEDIUM (not HIGH/URGENT)
+        
+        Args:
+            threshold_days: Number of days overdue before abandonment (default 7)
+            dry_run: If True, don't actually mark; just return what would be marked
+        
+        Returns:
+            (count, list_of_task_ids) - count of tasks and their IDs
+        """
+        candidates = self.storage.get_tasks_overdue_days(threshold_days)
+        
+        # Filter by priority: only abandon LOW/MEDIUM
+        to_abandon = [task for task in candidates if task.can_be_abandoned(threshold_days)]
+        
+        if dry_run:
+            return len(to_abandon), [t.id for t in to_abandon]
+        
+        # Mark as abandoned
+        abandoned_ids = []
+        for task in to_abandon:
+            task.status = TaskStatus.ABANDONED
+            task.updated_at = datetime.now()
+            abandoned_ids.append(task.id)
+        
+        self.storage.save()
+        return len(abandoned_ids), abandoned_ids
 
     def export_tasks_to_csv(self, output_path, status_filter=None,
                            priority_filter=None, show_overdue=False):

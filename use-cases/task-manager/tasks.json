@@ -25,5 +25,41 @@
     "due_date": "2026-03-27T00:00:00",
     "completed_at": null,
     "tags": []
+  },
+  {
+    "id": "39264e79-6ab7-4996-a101-96dae3b01486",
+    "title": "Old Low Priority Task",
+    "description": "been waiting",
+    "priority": 1,
+    "status": "abandoned",
+    "created_at": "2026-03-26T18:31:13.508575",
+    "updated_at": "2026-03-26T18:31:28.930730",
+    "due_date": "2026-03-10T00:00:00",
+    "completed_at": null,
+    "tags": []
+  },
+  {
+    "id": "73e5b3ee-e69b-40a5-9676-6f91446b7724",
+    "title": "Old Medium Priority Task",
+    "description": "medium importance",
+    "priority": 2,
+    "status": "abandoned",
+    "created_at": "2026-03-26T18:31:13.642859",
+    "updated_at": "2026-03-26T18:31:28.930731",
+    "due_date": "2026-03-08T00:00:00",
+    "completed_at": null,
+    "tags": []
+  },
+  {
+    "id": "acace156-4754-4179-9a2b-71ce35367ac0",
+    "title": "Old High Priority Task",
+    "description": "high importance",
+    "priority": 3,
+    "status": "todo",
+    "created_at": "2026-03-26T18:31:13.841979",
+    "updated_at": "2026-03-26T18:31:13.841979",
+    "due_date": "2026-03-05T00:00:00",
+    "completed_at": null,
+    "tags": []
   }
 ]
