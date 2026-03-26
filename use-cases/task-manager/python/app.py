@@ -24,18 +24,9 @@ class TaskManager:
         return task_id
 
     def list_tasks(self, status_filter=None, priority_filter=None, show_overdue=False):
-        if show_overdue:
-            return self.storage.get_overdue_tasks()
-
-        if status_filter:
-            status = TaskStatus(status_filter)
-            return self.storage.get_tasks_by_status(status)
-
-        if priority_filter:
-            priority = TaskPriority(priority_filter)
-            return self.storage.get_tasks_by_priority(priority)
-
-        return self.storage.get_all_tasks()
+        status = TaskStatus(status_filter) if status_filter else None
+        priority = TaskPriority(priority_filter) if priority_filter else None
+        return self.storage.get_tasks(status=status, priority=priority, overdue=show_overdue)
 
     def update_task_status(self, task_id, new_status_value):
         new_status = TaskStatus(new_status_value)

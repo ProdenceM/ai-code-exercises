@@ -99,3 +99,13 @@ class TaskStorage:
     def get_overdue_tasks(self):
         return [task for task in self.tasks.values() if task.is_overdue()]
 
+    def get_tasks(self, status=None, priority=None, overdue=False):
+        tasks = self.get_all_tasks()
+        if status is not None:
+            tasks = [task for task in tasks if task.status == status]
+        if priority is not None:
+            tasks = [task for task in tasks if task.priority == priority]
+        if overdue:
+            tasks = [task for task in tasks if task.is_overdue()]
+        return tasks
+
